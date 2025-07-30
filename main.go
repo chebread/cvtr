@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 )
 
 var currencyList = [...]string{
@@ -45,16 +46,21 @@ var UsdCpiData = map[int]float64{
 	2020: 258.811, 2021: 270.969, 2022: 292.655, 2023: 304.702, 2024: 313.689,
 }
 
-// TODO: crawling is required
-const UsdToKrw = 1384.03 // 1 달러 = 1388.50 원
-const KrwToUsd = 0.00072 // 1 원 = 0.00072 달러
+// TODO: 사용자가 원하면 --rate usd-to-krw=xxx, --rate krw-to-usd=xxx 과 같은 Flag으로 특정 환율을 직접 지정할 수 있게 함.
+// 사용자가 직접 환율을 바꾸면, 시간 관련 출력에는 "사용자가 ~ 몇일 몇시에 정의함."이라고 뜨게 하기. 즉, "USD_KRW Last Updated: Customized at 2025-07-30 23:30."
 
+// 합리적인 시점의 환율 데이터를 코드에 변수로 내장함.
+var ExchangeRatesLastUpdated = map[string]time.Time{
+	"KRW_TO_USD": time.Date(2025, 7, 30, 0, 0, 0, 0, time.UTC),
+	"USD_TO_KRW": time.Date(2025, 7, 30, 0, 0, 0, 0, time.UTC),
+}
 var ExchangeRates = map[string]float64{
-	"USD_TO_KRW": 1384.03, // 1달러당 원화
 	"KRW_TO_USD": 0.00072, // 1원당 달러
+	"USD_TO_KRW": 1384.03, // 1달러당 원화
 }
 
 func main() {
+	// TODO: cvtr 이렇게 아무런 인수도 없이 실행시, cvtr help가 실행된 것 처럼 하기.
 	// os.Args is []string array.
 	if len(os.Args) >= 2 {
 		// subcommand 존재시
@@ -102,12 +108,14 @@ func main() {
 					case "KRW":
 						// convert 3000 KRW to USD
 						amountInUsd := ExchangeRates["KRW_TO_USD"] * float64(amount) // USD로 환산된 금액; 원화 -> 달러
+						fmt.Println("USD_KRW Last Updated:", ExchangeRatesLastUpdated["KRW_TO_USD"].Format("2006-01-02"))
 						fmt.Printf("원화 -> 달러: %v$\n", amountInUsd)
 					}
 				case "KRW":
 					switch sourceCurrency {
 					case "USD":
 						amountInKrw := ExchangeRates["USD_TO_KRW"] * float64(amount)
+						fmt.Println("USD_KRW Last Updated:", ExchangeRatesLastUpdated["USD_TO_KRW"].Format("2006-01-02"))
 						fmt.Printf("달러 -> 원화: %v₩\n", amountInKrw)
 					}
 				}
@@ -179,8 +187,17 @@ func main() {
 					fmt.Printf("과거 가치: %v\n", result)
 				}
 			}
+		case "help":
+			help()
 		default:
 			fmt.Printf("error: %s 잘못된 명령어.\n", os.Args[1])
 		}
+	} else {
+		help()
 	}
+}
+
+// 도움말
+func help() {
+	fmt.Println("help")
 }
