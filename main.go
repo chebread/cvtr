@@ -1,3 +1,8 @@
+// TODO: 사용자가 원하면 --rate usd-to-krw=xxx, --rate krw-to-usd=xxx 과 같은 Flag으로 특정 환율을 직접 지정할 수 있게 함.
+// -> 사용자가 직접 환율을 바꾸면, 시간 관련 출력에는 "사용자가 ~ 몇일 몇시에 정의함."이라고 뜨게 하기. 즉, "USD_KRW Last Updated: Customized at 2025-07-30 23:30."
+// TODO: amount에서 쉼표 사용할 수 있게 하기. 쉼표는 1,000 10,00 100,0 1,0,0,0 든 아무런 상관 없음.
+// -> 쉼표는 오직 사용자가 입력시 혼란을 방지하기 위한 것임. 모든 입력된 쉼표는 모두 삭제되어 정수만 남을 것임.
+
 package main
 
 import (
@@ -46,9 +51,6 @@ var UsdCpiData = map[int]float64{
 	2020: 258.811, 2021: 270.969, 2022: 292.655, 2023: 304.702, 2024: 313.689,
 }
 
-// TODO: 사용자가 원하면 --rate usd-to-krw=xxx, --rate krw-to-usd=xxx 과 같은 Flag으로 특정 환율을 직접 지정할 수 있게 함.
-// 사용자가 직접 환율을 바꾸면, 시간 관련 출력에는 "사용자가 ~ 몇일 몇시에 정의함."이라고 뜨게 하기. 즉, "USD_KRW Last Updated: Customized at 2025-07-30 23:30."
-
 // 합리적인 시점의 환율 데이터를 코드에 변수로 내장함.
 var ExchangeRatesLastUpdated = map[string]time.Time{
 	"KRW_TO_USD": time.Date(2025, 7, 30, 0, 0, 0, 0, time.UTC),
@@ -60,7 +62,6 @@ var ExchangeRates = map[string]float64{
 }
 
 func main() {
-	// TODO: cvtr 이렇게 아무런 인수도 없이 실행시, cvtr help가 실행된 것 처럼 하기.
 	// os.Args is []string array.
 	if len(os.Args) >= 2 {
 		// subcommand 존재시
