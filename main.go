@@ -111,7 +111,6 @@ func main() {
 				}
 
 				// main logic
-				historyCmd()
 			}
 		default:
 			fmt.Printf("error: %s 잘못된 명령어.\n", os.Args[1])
