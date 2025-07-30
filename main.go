@@ -20,7 +20,7 @@ func main() {
 		// subcommand 존재시
 		switch os.Args[1] {
 		case "convert":
-			// USAGE: cvtr convert <amount> <source_currency> to <target_currency>
+			// USAGE: convert <amount> <source_currency> to <target_currency>
 			if len(os.Args) <= 5 {
 				fmt.Println("error: 충분한 인수가 제공되지 않음.")
 			} else {
@@ -29,7 +29,6 @@ func main() {
 				amountStr := os.Args[2]
 				sourceCurrency := os.Args[3]
 				targetCurrency := os.Args[5]
-				fmt.Println(amountStr, sourceCurrency, targetCurrency)
 
 				// 지원 통화 체크
 				var isValidSourceCurrency bool = false
@@ -43,28 +42,40 @@ func main() {
 					}
 				}
 				if !isValidSourceCurrency {
-					fmt.Printf("error: sourceCurrency에 입력한 %s 통화는 지원되지 않음.\n", sourceCurrency)
+					fmt.Printf("error: sourceCurrency %s 통화는 지원되지 않음.\n", sourceCurrency)
 					return // main 함수 종료
 				}
 				if !isValidTargetCurrency {
-					fmt.Printf("error: targetCurrency에 입력한 %s 통화는 지원되지 않음.\n", targetCurrency)
+					fmt.Printf("error: targetCurrency %s 통화는 지원되지 않음.\n", targetCurrency)
 					return
 				}
 
 				// amount: string -> positive int 변환
 				// 참고로, amount가 0이면 의미가 없으므로 종료해야 함.
 				amount, err := strconv.Atoi(amountStr)
-				fmt.Println(amount)
 				if err != nil || amount <= 0 {
 					fmt.Println("error: amount는 양수여야 함.")
 				}
 
 				// main logic
-				convertCmd()
-
+				switch targetCurrency {
+				case "USD":
+					switch sourceCurrency {
+					case "KRW":
+						// convert 3000 KRW to USD
+						amountInUsd := KrwToUsd * float64(amount) // USD로 환산된 금액; 원화 -> 달러
+						fmt.Printf("원화 -> 달러: %v$\n", amountInUsd)
+					}
+				case "KRW":
+					switch sourceCurrency {
+					case "USD":
+						amountInKrw := UsdToKrw * float64(amount)
+						fmt.Printf("달러 -> 원화: %v₩\n", amountInKrw)
+					}
+				}
 			}
 		case "history":
-			// USAGE: cvtr history <amount> <currency> <start_year> to <end_year>
+			// USAGE: history <amount> <currency> <start_year> to <end_year>
 			fmt.Println("history")
 			if len(os.Args) <= 6 {
 				fmt.Println("error: 충분한 인수가 제공되지 않음.")
@@ -82,7 +93,7 @@ func main() {
 					}
 				}
 				if !isValidCurrency {
-					fmt.Printf("error: currency에 입력한 %s 통화는 지원되지 않음.\n", currency)
+					fmt.Printf("error: currency %s 통화는 지원되지 않음.\n", currency)
 					return
 				}
 
