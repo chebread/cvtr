@@ -11,7 +11,7 @@ var currencyList = [...]string{
 	"USD",
 }
 
-// 대한민국 연도별 소비자물가지수(CPI). 기준 연도: 2020년 = 100.
+// KRW CPI
 // https://www.index.go.kr/unify/idx-info.do?idxCd=4226
 var KrwCpiData = map[int]float64{
 	2024: 114.2, 2023: 111.6, 2022: 107.7, 2021: 102.5, 2020: 100.0,
@@ -28,7 +28,7 @@ var KrwCpiData = map[int]float64{
 	1969: 4.0, 1968: 3.6, 1967: 3.2, 1966: 2.9, 1965: 2.6,
 }
 
-// TODO: (half1 + half2) / 2 하면 년 평균의 cpi를 알 수 있음.
+// USD CPI
 // https://data.bls.gov/timeseries/CUUR0000SA0
 var UsdCpiData = map[int]float64{
 	1965: 31.508, 1966: 32.458, 1967: 33.358, 1968: 34.783, 1969: 36.683,
@@ -45,11 +45,16 @@ var UsdCpiData = map[int]float64{
 	2020: 258.811, 2021: 270.969, 2022: 292.655, 2023: 304.702, 2024: 313.689,
 }
 
+// TODO: crawling is required
 const UsdToKrw = 1384.03 // 1 달러 = 1388.50 원
 const KrwToUsd = 0.00072 // 1 원 = 0.00072 달러
 
-func main() {
+var ExchangeRates = map[string]float64{
+	"USD_TO_KRW": 1384.03, // 1달러당 원화
+	"KRW_TO_USD": 0.00072, // 1원당 달러
+}
 
+func main() {
 	// os.Args is []string array.
 	if len(os.Args) >= 2 {
 		// subcommand 존재시
@@ -96,13 +101,13 @@ func main() {
 					switch sourceCurrency {
 					case "KRW":
 						// convert 3000 KRW to USD
-						amountInUsd := KrwToUsd * float64(amount) // USD로 환산된 금액; 원화 -> 달러
+						amountInUsd := ExchangeRates["KRW_TO_USD"] * float64(amount) // USD로 환산된 금액; 원화 -> 달러
 						fmt.Printf("원화 -> 달러: %v$\n", amountInUsd)
 					}
 				case "KRW":
 					switch sourceCurrency {
 					case "USD":
-						amountInKrw := UsdToKrw * float64(amount)
+						amountInKrw := ExchangeRates["USD_TO_KRW"] * float64(amount)
 						fmt.Printf("달러 -> 원화: %v₩\n", amountInKrw)
 					}
 				}
@@ -144,17 +149,9 @@ func main() {
 					return
 				}
 
-				// sY와 eY가 같으면 그냥 값 반환함.
-				if startYear == endYear {
-					// TODO: '반드시 SY != eY 한다' 라고 에러를 반환하는 것이 나은 가?
-					fmt.Printf("%v -> %v: %v amount", startYear, endYear, amount)
-					return
-				}
-
 				// sY, eY는 2024 ~ 1965년만 가능함
 				isValidStartYearRange := (1965 <= startYear) && (startYear <= 2024)
 				isValidEndYearRange := (1965 <= endYear) && (endYear <= 2024)
-
 				if !isValidStartYearRange || !isValidEndYearRange {
 					if !isValidStartYearRange {
 						fmt.Println("error: startYear 1965년 ~ 2024년만 가능함.")
@@ -164,16 +161,9 @@ func main() {
 					}
 					return
 				}
-				// sY, eY에 대한 CPI가 없으면 종료함.
-				_, startOk := KrwCpiData[startYear]
-				_, endOk := KrwCpiData[endYear]
-				if !startOk || !endOk {
-					if !startOk {
-						fmt.Printf("error: startYear %d년 CPI 데이터가 없음.\n", startYear)
-					}
-					if !endOk {
-						fmt.Printf("error: endYear %d년 CPI 데이터가 없음.\n", endYear)
-					}
+				// sY와 eY가 같다면 에러를 반환함
+				if startYear == endYear {
+					fmt.Println("error: startYear와 endYear는 달라야 함.")
 					return
 				}
 
