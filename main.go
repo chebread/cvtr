@@ -1,5 +1,6 @@
 // TODO: amount에서 쉼표 사용할 수 있게 하기. 쉼표는 1,000 10,00 100,0 1,0,0,0 든 아무런 상관 없음.
 // -> 쉼표는 오직 사용자가 입력시 혼란을 방지하기 위한 것임. 모든 입력된 쉼표는 모두 삭제되어 정수만 남을 것임.
+// TODO: usd history 추가
 
 package main
 
@@ -7,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -117,7 +119,7 @@ func main() {
 
 				// amount: string -> positive int 변환
 				// 참고로, amount가 0이면 의미가 없으므로 종료해야 함.
-				amount, err := strconv.Atoi(amountStr) // Atoi는 int(32 or 64) type으로 변환함
+				amount, err := strconv.Atoi(strings.ReplaceAll(amountStr, ",", "")) // amount에 존재하는 쉼표를 모두 삭제함; Atoi는 int(32 or 64) type으로 변환함
 				if err != nil || amount <= 0 {
 					fmt.Println("error: amount는 양수여야 함.")
 				}
@@ -175,7 +177,7 @@ func main() {
 					return
 				}
 
-				amount, err := strconv.Atoi(amountStr)
+				amount, err := strconv.Atoi(strings.ReplaceAll(amountStr, ",", ""))
 				if err != nil || amount <= 0 {
 					fmt.Println("error: amount는 양수여야 함.")
 					return
