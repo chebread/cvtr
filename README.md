@@ -17,30 +17,38 @@
 ```shell
 cvtr convert <amount> <source_currency> to <target_currency> [--rate|-R <rate_value>]
 ```
-Instantly convert any amount between currencies. By default, the command uses a set of built-in, recent exchange rates. To use a custom rate, you can provide the **--rate or -R flag**. The value for this flag specifies the rate in KRW per 1 USD. The resulting amount is displayed with a precision of up to six decimal places.
+Instantly convert any amount between currencies. By default, the command uses a set of built-in, recent exchange rates. To use a custom rate, you can provide the **--rate or -R flag**. The value for this flag specifies the rate in KRW per 1 USD.
 
 ```shell
 # To convert 100,000 KRW to USD
-cvtr convert 100000 KRW to USD
+> cvtr convert 100000 KRW to USD
+Last Updated: 2025-07-30
+72.25276908737528$
 
 # To convert 100 USD to KRW with a custom rate of 1400 KRW per 1 USD
-cvtr convert 100 USD to KRW --rate 1400
+> cvtr convert 100 USD to KRW --rate 1400
+Last Updated: Customed
+140,000₩
 ```
 
 ### Historical value calculation
 ```shell
 cvtr history <amount> <currency> <start_year> to <end_year>
 ```
-Ever wondered what "100 million KRW in the 1980s" would be worth today, or how much "1,000 KRW in 2025" would have been worth in the 2000s? This command estimates the purchasing power of a monetary value from a specified year1 in a target year2. You can use current for either <start_year> or <end_year> to represent the present day. Please note that the start and end years are limited to the range of **1965-2024**. The resulting amount is displayed with a precision of up to six decimal places.
+Ever wondered what "100 million KRW in the 1980s" would be worth today, or how much "1,000 KRW in 2025" would have been worth in the 2000s? This command estimates the purchasing power of a monetary value from a specified year1 in a target year2. You can use current for either <start_year> or <end_year> to represent the present day. Please note that the start and end years are limited to the range of **1965-2024**.
 
 You can input the <amount> with or without commas. For example, 1,000, 10,00, 100,0, or even 1,0,0,0 are all valid. The system will automatically remove all commas before processing, using only the numerical value.
 
 ```shell
 # How much will 1,000 KRW from 1980 be worth in 2024?
-cvtr history 1000 KRW 1980 to 2024
+> cvtr history 1000 KRW 1980 to 2024
+Present Value
+5,438.0952380952385
 
 # How much is 10 USD worth in 2024 in 1980?
-cvtr history 10 USD 2024 to 1980
+> cvtr history 10 USD 2024 to 1980
+Past Value
+2.6270605599813828
 ```
 
 ### Flexible Amount Input
