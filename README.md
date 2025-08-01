@@ -17,11 +17,14 @@
 ```shell
 cvtr convert <amount> <source_currency> to <target_currency>
 ```
-Instantly convert any amount between currencies using the latest exchange rates.
+Instantly convert any amount between currencies. By default, the command uses a set of built-in, recent exchange rates. To use a custom rate, you can provide the **--rate or -R flag**. The value for this flag specifies the rate in KRW per 1 USD.
 
 ```shell
-# To convert 100,000 KRW to USD:
+# To convert 100,000 KRW to USD
 cvtr convert 100000 KRW to USD
+
+# To convert 100 USD to KRW with a custom rate of 1400 KRW per 1 USD
+cvtr convert 100 USD to KRW --rate 1400
 ```
 
 ### Historical value calculation
@@ -34,8 +37,8 @@ Ever wondered what "100 million KRW in the 1980s" would be worth today, or how m
 # How much will 1,000 KRW from 1980 be worth in 2024?
 cvtr history 1000 KRW 1980 to 2024
 
-# How much is 1,000 KRW worth in 2024 in 1980?
-cvtr history 1000 KRW 2024 to 1980
+# How much is 10 USD worth in 2024 in 1980?
+cvtr history 10 USD 2024 to 1980
 ```
 
 ## Currently supported currencies

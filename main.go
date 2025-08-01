@@ -1,5 +1,3 @@
-// TODO: 사용자가 원하면 --rate usd-to-krw=xxx, --rate krw-to-usd=xxx 과 같은 Flag으로 특정 환율을 직접 지정할 수 있게 함.
-// -> 사용자가 직접 환율을 바꾸면, 시간 관련 출력에는 "사용자가 ~ 몇일 몇시에 정의함."이라고 뜨게 하기. 즉, "USD_KRW Last Updated: Customized at 2025-07-30 23:30."
 // TODO: amount에서 쉼표 사용할 수 있게 하기. 쉼표는 1,000 10,00 100,0 1,0,0,0 든 아무런 상관 없음.
 // -> 쉼표는 오직 사용자가 입력시 혼란을 방지하기 위한 것임. 모든 입력된 쉼표는 모두 삭제되어 정수만 남을 것임.
 
@@ -14,7 +12,9 @@ import (
 
 var currencyList = [...]string{
 	"KRW",
+	"krw",
 	"USD",
+	"usd",
 }
 
 // KRW CPI
@@ -53,11 +53,9 @@ var UsdCpiData = map[int]float64{
 
 // 합리적인 시점의 환율 데이터를 코드에 변수로 내장함.
 var ExchangeRatesLastUpdated = map[string]time.Time{
-	"KRW_TO_USD": time.Date(2025, 7, 30, 0, 0, 0, 0, time.UTC),
-	"USD_TO_KRW": time.Date(2025, 7, 30, 0, 0, 0, 0, time.UTC),
+	"USD_TO_KRW": time.Date(2025, 7, 30, 0, 0, 0, 0, time.UTC), // KRW_TO_USD = 1 / USD_TO_KRW
 }
 var ExchangeRates = map[string]float64{
-	"KRW_TO_USD": 0.00072, // 1원당 달러
 	"USD_TO_KRW": 1384.03, // 1달러당 원화
 }
 
@@ -74,6 +72,28 @@ func main() {
 				amountStr := os.Args[2]
 				sourceCurrency := os.Args[3]
 				targetCurrency := os.Args[5]
+
+				isFlag := false
+				var flagRateValue float64
+
+				// --rate flag
+				if len(os.Args) >= 7 { // len은 1부터이다.
+					// rate flag에 값이 제공되지 않으면 그냥 아무 활동도 하지 않음.
+					flag := os.Args[6]
+					if flag != "--rate" && flag != "-R" { // --rate"가 아니고, 그리고 "-R"도 아닐 때
+						fmt.Printf("error: %v 잘못된 플래그.\n", flag)
+					}
+					if len(os.Args) == 8 {
+						isFlag = true
+						var err error
+						flagRateValue, err = strconv.ParseFloat(os.Args[7], 64) // 무조건 1달러당 원화 // 1300
+						if err != nil {
+							fmt.Println("error: string to float64.")
+							return
+						}
+
+					}
+				}
 
 				// 지원 통화 체크
 				var isValidSourceCurrency bool = false
@@ -104,19 +124,32 @@ func main() {
 
 				// main logic
 				switch targetCurrency {
-				case "USD":
+				case "USD", "usd":
 					switch sourceCurrency {
-					case "KRW":
-						// convert 3000 KRW to USD
-						amountInUsd := ExchangeRates["KRW_TO_USD"] * float64(amount) // USD로 환산된 금액; 원화 -> 달러
-						fmt.Println("USD_KRW Last Updated:", ExchangeRatesLastUpdated["KRW_TO_USD"].Format("2006-01-02"))
+					case "KRW", "krw":
+						rate := 1 / ExchangeRates["USD_TO_KRW"]
+						time := ExchangeRatesLastUpdated["USD_TO_KRW"].Format("2006-01-02")
+						if isFlag {
+							rate = 1 / flagRateValue
+							time = "Customed"
+						}
+
+						amountInUsd := rate * float64(amount) // USD로 환산된 금액; 원화 -> 달러
+						fmt.Println("USD_KRW Last Updated:", time)
 						fmt.Printf("원화 -> 달러: %v$\n", amountInUsd)
 					}
-				case "KRW":
+				case "KRW", "krw":
 					switch sourceCurrency {
-					case "USD":
-						amountInKrw := ExchangeRates["USD_TO_KRW"] * float64(amount)
-						fmt.Println("USD_KRW Last Updated:", ExchangeRatesLastUpdated["USD_TO_KRW"].Format("2006-01-02"))
+					case "USD", "usd":
+						rate := ExchangeRates["USD_TO_KRW"]
+						time := ExchangeRatesLastUpdated["USD_TO_KRW"].Format("2006-01-02")
+						if isFlag {
+							rate = flagRateValue
+							time = "Customed"
+						}
+
+						amountInKrw := rate * float64(amount)
+						fmt.Println("USD_KRW Last Updated:", time)
 						fmt.Printf("달러 -> 원화: %v₩\n", amountInKrw)
 					}
 				}
