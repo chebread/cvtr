@@ -18,12 +18,18 @@ func main() {
 			} else {
 				amountStr := os.Args[2]
 				sourceCurrency := os.Args[3]
+				keyword := os.Args[4]
 				targetCurrency := os.Args[5]
 
-				isFlag := false
-				var flagRateValue float64
+				// 'to' keyword
+				if keyword != "to" {
+					boldRed("Error: Use 'to' keyword, instead of '%s' keyword\n", keyword)
+					return
+				}
 
 				// --rate flag
+				isFlag := false
+				var flagRateValue float64
 				if len(os.Args) >= 7 { // len은 1부터이다.
 					// rate flag에 값이 제공되지 않으면 그냥 아무 활동도 하지 않음.
 					flag := os.Args[6]
@@ -110,7 +116,14 @@ func main() {
 				amountStr := os.Args[2]
 				currency := os.Args[3]
 				startYearStr := os.Args[4]
+				keyword := os.Args[5]
 				endYearStr := os.Args[6]
+
+				// 'to' keyword
+				if keyword != "to" {
+					boldRed("Error: Use 'to' keyword, instead of '%s' keyword\n", keyword)
+					return
+				}
 
 				var isValidCurrency bool = false
 				for _, i := range currencyList {
