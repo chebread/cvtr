@@ -23,14 +23,12 @@ func comma(f float64) string {
 	if n <= 3 {
 		return integerPart + decimalPart
 	}
-
 	var buf bytes.Buffer
 	firstGroupSize := n % 3
 	if firstGroupSize == 0 {
 		firstGroupSize = 3
 	}
 	buf.WriteString(integerPart[:firstGroupSize])
-
 	for i := firstGroupSize; i < n; i += 3 {
 		buf.WriteByte(',')
 		buf.WriteString(integerPart[i : i+3])

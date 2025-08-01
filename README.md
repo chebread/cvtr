@@ -51,7 +51,7 @@ You can input the <amount> with or without commas in both cvtr convert and cvtr 
 - US Dollar (USD)
 
 ## Installation
-1. Visit the [GitHub Releases page](https://github.com/chebread/cvtr/releases) for `cvtr`.
+1. Visit [the GitHub Releases page](https://github.com/chebread/cvtr/releases) for `cvtr`.
 2. Download the appropriate file for your operating system and architecture.
 3. Unachive the downloaded file.
 4. Execute the `cvtr` executable file.
