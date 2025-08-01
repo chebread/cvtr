@@ -1,16 +1,42 @@
-// TODO: amount에서 쉼표 사용할 수 있게 하기. 쉼표는 1,000 10,00 100,0 1,0,0,0 든 아무런 상관 없음.
-// -> 쉼표는 오직 사용자가 입력시 혼란을 방지하기 위한 것임. 모든 입력된 쉼표는 모두 삭제되어 정수만 남을 것임.
-// TODO: usd history 추가
-
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/fatih/color"
 )
+
+func comma(f float64) string {
+	s := strconv.FormatFloat(f, 'f', -1, 64)
+	parts := strings.Split(s, ".")
+	integerPart := parts[0]
+	decimalPart := ""
+	if len(parts) > 1 {
+		decimalPart = "." + parts[1]
+	}
+	n := len(integerPart)
+	if n <= 3 {
+		return integerPart + decimalPart
+	}
+
+	var buf bytes.Buffer
+	firstGroupSize := n % 3
+	if firstGroupSize == 0 {
+		firstGroupSize = 3
+	}
+	buf.WriteString(integerPart[:firstGroupSize])
+
+	for i := firstGroupSize; i < n; i += 3 {
+		buf.WriteByte(',')
+		buf.WriteString(integerPart[i : i+3])
+	}
+	return buf.String() + decimalPart
+}
 
 var currencyList = [...]string{
 	"KRW",
@@ -62,14 +88,18 @@ var ExchangeRates = map[string]float64{
 }
 
 func main() {
+	// colored printf
+	var boldCyan = color.New(color.FgCyan, color.Bold).PrintfFunc() // cyan colored printf
+	var boldRed = color.New(color.FgRed, color.Bold).PrintfFunc()
+	// var underlineBoldWhite = color.New(color.FgWhite, color.Bold, color.Underline).PrintfFunc()
+
 	// os.Args is []string array.
 	if len(os.Args) >= 2 {
 		// subcommand 존재시
 		switch os.Args[1] {
 		case "convert":
-			// USAGE: convert <amount> <source_currency> to <target_currency>
 			if len(os.Args) <= 5 {
-				fmt.Println("error: 충분한 인수가 제공되지 않음.")
+				boldRed("error: Not enough arguments provided\n")
 			} else {
 				amountStr := os.Args[2]
 				sourceCurrency := os.Args[3]
@@ -83,14 +113,15 @@ func main() {
 					// rate flag에 값이 제공되지 않으면 그냥 아무 활동도 하지 않음.
 					flag := os.Args[6]
 					if flag != "--rate" && flag != "-R" { // --rate"가 아니고, 그리고 "-R"도 아닐 때
-						fmt.Printf("error: %v 잘못된 플래그.\n", flag)
+						boldRed("error: %s is an invalid flag\n", flag)
+						return
 					}
 					if len(os.Args) == 8 {
 						isFlag = true
 						var err error
 						flagRateValue, err = strconv.ParseFloat(os.Args[7], 64) // 무조건 1달러당 원화 // 1300
 						if err != nil {
-							fmt.Println("error: string to float64.")
+							boldRed("error: Error converting string to float64\n")
 							return
 						}
 
@@ -109,11 +140,11 @@ func main() {
 					}
 				}
 				if !isValidSourceCurrency {
-					fmt.Printf("error: sourceCurrency %s 통화는 지원되지 않음.\n", sourceCurrency)
+					boldRed("error: The currency %s in <source_currency> is not supported\n", sourceCurrency)
 					return // main 함수 종료
 				}
 				if !isValidTargetCurrency {
-					fmt.Printf("error: targetCurrency %s 통화는 지원되지 않음.\n", targetCurrency)
+					boldRed("error: The currency %s in <target_currency> is not supported\n", targetCurrency)
 					return
 				}
 
@@ -121,7 +152,8 @@ func main() {
 				// 참고로, amount가 0이면 의미가 없으므로 종료해야 함.
 				amount, err := strconv.Atoi(strings.ReplaceAll(amountStr, ",", "")) // amount에 존재하는 쉼표를 모두 삭제함; Atoi는 int(32 or 64) type으로 변환함
 				if err != nil || amount <= 0 {
-					fmt.Println("error: amount는 양수여야 함.")
+					boldRed("error: <amount> must be positive\n")
+					return
 				}
 
 				// main logic
@@ -137,8 +169,8 @@ func main() {
 						}
 
 						amountInUsd := rate * float64(amount) // USD로 환산된 금액; 원화 -> 달러
-						fmt.Println("USD_KRW Last Updated:", time)
-						fmt.Printf("원화 -> 달러: %v$\n", amountInUsd)
+						fmt.Printf("Last Updated: %s\n", time)
+						boldCyan("%s$\n", comma(amountInUsd))
 					}
 				case "KRW", "krw":
 					switch sourceCurrency {
@@ -151,15 +183,14 @@ func main() {
 						}
 
 						amountInKrw := rate * float64(amount)
-						fmt.Println("USD_KRW Last Updated:", time)
-						fmt.Printf("달러 -> 원화: %v₩\n", amountInKrw)
+						fmt.Printf("Last Updated: %s\n", time)
+						boldCyan("%s₩\n", comma(amountInKrw))
 					}
 				}
 			}
 		case "history":
-			// USAGE: history <amount> <currency> <start_year> to <end_year>
 			if len(os.Args) <= 6 {
-				fmt.Println("error: 충분한 인수가 제공되지 않음.")
+				boldRed("error: Not enough arguments provided\n")
 			} else {
 				amountStr := os.Args[2]
 				currency := os.Args[3]
@@ -173,23 +204,23 @@ func main() {
 					}
 				}
 				if !isValidCurrency {
-					fmt.Printf("error: currency %s 통화는 지원되지 않음.\n", currency)
+					boldRed("error: The currency %s in <currency> is not supported\n", currency)
 					return
 				}
 
 				amount, err := strconv.Atoi(strings.ReplaceAll(amountStr, ",", ""))
 				if err != nil || amount <= 0 {
-					fmt.Println("error: amount는 양수여야 함.")
+					boldRed("error: <amount> must be positive\n")
 					return
 				}
 				startYear, err := strconv.Atoi(startYearStr)
 				if err != nil || startYear <= 0 {
-					fmt.Println("error: startYear는 양수여야 함.")
+					boldRed("error: <start_year> must be positive\n")
 					return
 				}
 				endYear, err := strconv.Atoi(endYearStr)
 				if err != nil || endYear <= 0 {
-					fmt.Println("error: startYear는 양수여야 함.")
+					boldRed("error: <end_year> must be positive\n")
 					return
 				}
 
@@ -198,35 +229,46 @@ func main() {
 				isValidEndYearRange := (1965 <= endYear) && (endYear <= 2024)
 				if !isValidStartYearRange || !isValidEndYearRange {
 					if !isValidStartYearRange {
-						fmt.Println("error: startYear 1965년 ~ 2024년만 가능함.")
+						boldRed("error: <start_year> is only valid between 1965 and 2024\n")
 					}
 					if !isValidEndYearRange {
-						fmt.Println("error: endYear 1965년 ~ 2024년만 가능함.")
+						boldRed("error: <end_year> is only valid between 1965 and 2024\n")
 					}
 					return
 				}
 				// sY와 eY가 같다면 에러를 반환함
 				if startYear == endYear {
-					fmt.Println("error: startYear와 endYear는 달라야 함.")
+					boldRed("error: <start_year> and <end_year> must be different\n")
 					return
 				}
 
 				// main logic
-				var fromCPI float64 = KrwCpiData[startYear]
-				var toCPI float64 = KrwCpiData[endYear]
+				var fromCPI float64
+				var toCPI float64
+				switch currency {
+				case "KRW", "krw":
+					fromCPI = KrwCpiData[startYear]
+					toCPI = KrwCpiData[endYear]
+				case "USD", "usd":
+					fromCPI = UsdCpiData[startYear]
+					toCPI = UsdCpiData[endYear]
+				}
+
 				var result float64 = float64(amount) * (toCPI / fromCPI)
 				var isToPresent bool = endYear > startYear
 
 				if isToPresent {
-					fmt.Printf("현재 가치: %v\n", result)
+					fmt.Println("Present Value")
 				} else {
-					fmt.Printf("과거 가치: %v\n", result)
+					fmt.Println("Past Value")
 				}
+				boldCyan("%s\n", comma(result))
+
 			}
 		case "help":
 			help()
 		default:
-			fmt.Printf("error: %s 잘못된 명령어.\n", os.Args[1])
+			boldRed("error: %s is an invalid command\n", os.Args[1])
 		}
 	} else {
 		help()
