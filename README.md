@@ -37,8 +37,6 @@ cvtr history <amount> <currency> <start_year> to <end_year>
 ```
 Ever wondered what "100 million KRW in the 1980s" would be worth today, or how much "1,000 KRW in 2025" would have been worth in the 2000s? This command estimates the purchasing power of a monetary value from a specified year1 in a target year2. You can use current for either <start_year> or <end_year> to represent the present day. Please note that the start and end years are limited to the range of **1965-2024**.
 
-You can input the <amount> with or without commas. For example, 1,000, 10,00, 100,0, or even 1,0,0,0 are all valid. The system will automatically remove all commas before processing, using only the numerical value.
-
 ```shell
 # How much will 1,000 KRW from 1980 be worth in 2024?
 > cvtr history 1000 KRW 1980 to 2024
