@@ -92,6 +92,8 @@ func main() {
 						amountInUsd := rate * float64(amount) // USD로 환산된 금액; 원화 -> 달러
 						fmt.Printf("Last Updated: %s\n", time)
 						boldCyan("%s$\n", comma(amountInUsd))
+					default:
+						boldRed("error: The currencies of <source_currency> and <target_currency> must be different\n")
 					}
 				case "KRW", "krw":
 					switch sourceCurrency {
@@ -106,6 +108,8 @@ func main() {
 						amountInKrw := rate * float64(amount)
 						fmt.Printf("Last Updated: %s\n", time)
 						boldCyan("%s₩\n", comma(amountInKrw))
+					default:
+						boldRed("error: The currencies of <source_currency> and <target_currency> must be different\n")
 					}
 				}
 			}
