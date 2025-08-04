@@ -199,7 +199,7 @@ func main() {
 			}
 		case "help", "-h", "--help":
 			help()
-		case "version", "-V", "-v", "--version":
+		case "version", "-V", "--version":
 			fmt.Printf("cvtr %s\n", ProgramVersion)
 		default:
 			boldRed("error: %s is an invalid command\n", os.Args[1])
