@@ -6,8 +6,10 @@ import "time"
 var currencyList = [...]string{
 	"KRW",
 	"krw",
+	"₩",
 	"USD",
 	"usd",
+	"$",
 }
 
 // 합리적인 시점의 환율 데이터를 코드에 변수로 내장함.

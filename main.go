@@ -68,6 +68,8 @@ func main() {
 					boldRed("error: The currency %s in <target_currency> is not supported\n", targetCurrency)
 					return
 				}
+				// TODO: 만약, usdx krws 이렇게 입력시, 두 에러 메시지가 동시에 발생한다.
+				// TODO: 이럴 경우, 둘 다 보여줘야 하는가? 아니면, 점층적으로 에러를 반환하게 해야 하는가? 에러의 위게를 어떻게 설정할 것인가?
 
 				// amount: string -> positive int 변환
 				// 참고로, amount가 0이면 의미가 없으므로 종료해야 함.
@@ -79,9 +81,9 @@ func main() {
 
 				// main logic
 				switch targetCurrency {
-				case "USD", "usd":
+				case "USD", "usd", "$":
 					switch sourceCurrency {
-					case "KRW", "krw":
+					case "KRW", "krw", "₩":
 						rate := 1 / ExchangeRates["USD_KRW"]
 						time := ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
 						if isFlag {
@@ -95,9 +97,9 @@ func main() {
 					default:
 						boldRed("error: The currencies of <source_currency> and <target_currency> must be different\n")
 					}
-				case "KRW", "krw":
+				case "KRW", "krw", "₩":
 					switch sourceCurrency {
-					case "USD", "usd":
+					case "USD", "usd", "$":
 						rate := ExchangeRates["USD_KRW"]
 						time := ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
 						if isFlag {
@@ -178,10 +180,10 @@ func main() {
 				var fromCPI float64
 				var toCPI float64
 				switch currency {
-				case "KRW", "krw":
+				case "KRW", "krw", "₩":
 					fromCPI = KrwCpiData[startYear]
 					toCPI = KrwCpiData[endYear]
-				case "USD", "usd":
+				case "USD", "usd", "$":
 					fromCPI = UsdCpiData[startYear]
 					toCPI = UsdCpiData[endYear]
 				}
