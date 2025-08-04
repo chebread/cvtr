@@ -1,4 +1,7 @@
 # cvtr
+
+[[한국어](README.kr.md)]
+
 `cvtr` is a currency converter and historical value translator.
 
 ## Table of Contents
