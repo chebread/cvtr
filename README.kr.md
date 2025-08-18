@@ -61,6 +61,16 @@ Past Value
 - 미국 달러 (USD)
 
 ## 설치 방법
+### macOS
+Homebrew를 사용하여 `cvtr` 을 설치할 수 있습니다:
+
+```shell
+brew tap chebread/cvtr
+
+brew install cvtr
+```
+
+### 그 외 운영체제
 1. `cvtr`의 [GitHub Releases 페이지](https://github.com/chebread/cvtr/releases)에 방문합니다.
 2. 사용 중인 운영체제와 아키텍처에 맞는 파일을 다운로드합니다.
 3. 다운로드한 파일의 압축을 해제합니다.

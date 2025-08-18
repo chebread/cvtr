@@ -21,3 +21,17 @@ snapshot:
   name_template: "{{ incpatch .Version }}-next"
 changelog:
   disable: true
+brews:
+  -
+    repository:
+      owner: chebread
+      name: homebrew-cvtr
+      branch: master
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+
+    homepage: "https://github.com/chebread/cvtr"
+    description: "A dead simple currency tool for your terminal."
+    license: "MIT"
+
+    install: |
+      bin.install "cvtr"

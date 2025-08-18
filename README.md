@@ -60,6 +60,15 @@ You can input the <amount> with or without commas in both cvtr convert and cvtr 
 - US Dollar (USD)
 
 ## Installation
+### On macOS
+You can install `cvtr` with Homebrew:
+```shell
+brew tap chebread/cvtr
+
+brew install cvtr
+```
+
+### For other OS
 1. Visit [the GitHub Releases page](https://github.com/chebread/cvtr/releases) for `cvtr`.
 2. Download the appropriate file for your operating system and architecture.
 3. Unachive the downloaded file.
