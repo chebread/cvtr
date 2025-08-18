@@ -1,20 +1,18 @@
 # cvtr
-
 [[English](README.md)]
 
 `cvtr` 은 통화 변환 및 화폐의 역사적 가치를 계산하는 CLI 도구입니다.
 
 ## 목차
-
-  - [주요 기능](https://www.google.com/search?q=%23%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5)
-  - [사용법](https://www.google.com/search?q=%23%EC%82%AC%EC%9A%A9%EB%B2%95)
-  - [지원 통화](https://www.google.com/search?q=%23%EC%A7%80%EC%9B%90-%ED%86%B5%ED%99%94)
-  - [설치 방법](https://www.google.com/search?q=%23%EC%84%A4%EC%B9%98-%EB%B0%A9%EB%B2%95)
-  - [라이선스](https://www.google.com/search?q=%23%EB%9D%BC%EC%9D%B4%EC%84%A0%EC%8A%A4)
+- [주요 기능](#주요-기능)
+- [사용법](#사용법)
+- [지원 통화](#지원-통화)
+- [설치 방법](#설치-방법)
+- [라이선스](#라이선스)
 
 ## 주요 기능
-  - 실시간 환율 변환
-  - 역사적 화폐 가치 계산
+- 실시간 환율 변환
+- 역사적 화폐 가치 계산
 
 ## 사용법
 ### 실시간 환율 변환
@@ -59,15 +57,15 @@ Past Value
 `convert` 및 `history` 명령어 모두 금액을 입력할 때 쉼표(,)를 포함하거나 제외할 수 있습니다. 예를 들어, `1,000`, `10,00`, `100,0` 등은 모두 유효한 입력입니다. 시스템은 처리 전에 모든 쉼표를 자동으로 제거하고 숫자 값만 사용합니다.
 
 ## 지원 통화
-  - 대한민국 원 (KRW)
-  - 미국 달러 (USD)
+- 대한민국 원 (KRW)
+- 미국 달러 (USD)
 
 ## 설치 방법
-1.  `cvtr`의 GitHub Releases 페이지를 방문합니다.
-2.  사용 중인 운영체제와 아키텍처에 맞는 파일을 다운로드합니다.
-3.  다운로드한 파일의 압축을 해제합니다.
-4.  `cvtr` 실행 파일을 실행합니다.
-5.  더 쉬운 접근을 위해 `cvtr` 실행 파일이 있는 경로를 시스템의 `PATH` 환경 변수에 추가하는 것을 권장합니다.
+1. `cvtr`의 [GitHub Releases 페이지](https://github.com/chebread/cvtr/releases)에 방문합니다.
+2. 사용 중인 운영체제와 아키텍처에 맞는 파일을 다운로드합니다.
+3. 다운로드한 파일의 압축을 해제합니다.
+4. `cvtr` 실행 파일을 실행합니다.
+5. 더 쉬운 접근을 위해 `cvtr` 실행 파일이 있는 경로를 시스템의 `PATH` 환경 변수에 추가하는 것을 권장합니다.
 
 ## 라이선스
-MIT LICENSE © 2025 Cha Haneum
+MIT LICENSE &copy; 2025 Cha Haneum
