@@ -9,6 +9,7 @@
 - [How to use](#how-to-use)
 - [Currently supported currencies](#currently-supported-currencies)
 - [Installation](#installation)
+- [Updating](#updating)
 - [License](#license)
 
 ## Features
@@ -74,6 +75,19 @@ brew install cvtr
 3. Unachive the downloaded file.
 4. Execute the `cvtr` executable file.
 5. For easier access, consider adding `cvtr` executable file to your system's PATH environment variable.
+
+## Updating
+### On macOS
+If you installed `cvtr` using Homebrew, you can easily upgrade to the latest version when it's released.
+
+```shell
+brew upgrade cvtr
+```
+
+### For Other OS
+For other OS, you will need to download the new version from [the GitHub Releases page](https://github.com/chebread/cvtr/releases) for `cvtr`.
+
+Download the latest release for your system and replace your old executable file with the new one.
 
 ## License
 MIT LICENSE &copy; 2025 Cha Haneum
