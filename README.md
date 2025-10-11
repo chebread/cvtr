@@ -1,5 +1,4 @@
 # cvtr
-
 [[한국어](README.kr.md)]
 
 `cvtr` is a currency converter and historical value translator.
@@ -30,7 +29,7 @@ Last Updated: 2025-07-30
 72.25276908737528$
 
 # To convert 100 USD to KRW with a custom rate of 1400 KRW per 1 USD
-> cvtr convert 100 USD to KRW --rate 1400
+> cvtr convert 100 $ to KRW --rate 1400
 Last Updated: Customed
 140,000₩
 ```
@@ -43,7 +42,7 @@ Ever wondered what "100 million KRW in the 1980s" would be worth today, or how m
 
 ```shell
 # How much will 1,000 KRW from 1980 be worth in 2024?
-> cvtr history 1000 KRW 1980 to 2024
+> cvtr history 1000 ₩ 1980 to 2024
 Present Value
 5,438.0952380952385
 
@@ -57,8 +56,8 @@ Past Value
 You can input the <amount> with or without commas in both cvtr convert and cvtr history commands. For example, `1,000`, `10,00`, `100,0`, or even `1,0,0,0` are all valid. The system will automatically remove all commas before processing, using only the numerical value.
 
 ## Currently supported currencies
-- Korean Won (KRW)
-- US Dollar (USD)
+- Korean Won (KRW, It can be abbreviated as `₩`)
+- US Dollar (USD, It can be abbreviated as `$`)
 
 ## Installation
 ### On macOS

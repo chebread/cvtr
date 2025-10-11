@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func comma(f float64) string {
+func Comma(f float64) string {
 	s := strconv.FormatFloat(f, 'f', -1, 64)
 	parts := strings.Split(s, ".")
 	integerPart := parts[0]
