@@ -23,13 +23,13 @@ func main() {
 		help()
 		return
 	}
-
-	// cvtr convert: args[1] l2 <금액: args[2] l3> <소스_통화: args[3] l4> to: args[4] l5 <타겟_통화: args[5] l6> [--rate|-R: args[6] l7 <환율_값: args[7] l8>]
-
 	// subcommand 존재시
 	mode := os.Args[1]
 	switch mode {
 	case "convert":
+		// USAGE:
+		// cvtr convert: args[1] l2 <금액: args[2] l3> <소스_통화: args[3] l4> to: args[4] l5 <타겟_통화: args[5] l6> [--rate|-R: args[6] l7 <환율_값: args[7] l8>]
+
 		// 6개 미만일 때 오류
 		if len(os.Args) <= 5 {
 			boldRed("error: Not enough arguments provided\n")
@@ -41,6 +41,7 @@ func main() {
 		var keyword string = os.Args[4]
 		var targetCurrency string = os.Args[5]
 		var hasError bool
+
 		// to keyword 아닐때 오류
 		if keyword != "to" {
 			boldRed("error: Use 'to' keyword, instead of '%s' keyword\n", keyword)
@@ -113,11 +114,15 @@ func main() {
 		case "USD", "usd", "$":
 			switch sourceCurrency {
 			case "KRW", "krw", "₩":
-				rate := 1 / ExchangeRates["USD_KRW"]
-				time := ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
+				var rate float64
+				var time string
+
 				if isFlag {
 					rate = 1 / flagRateValue
 					time = "Customed"
+				} else {
+					rate = 1 / ExchangeRates["USD_KRW"] // TODO: 이게 부동소수점 error는 안나는가?
+					time = ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
 				}
 
 				amountInUsd := rate * float64(amount) // USD로 환산된 금액; 원화 -> 달러
@@ -129,11 +134,15 @@ func main() {
 		case "KRW", "krw", "₩":
 			switch sourceCurrency {
 			case "USD", "usd", "$":
-				rate := ExchangeRates["USD_KRW"]
-				time := ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
+				var rate float64
+				var time string
+
 				if isFlag {
 					rate = flagRateValue
 					time = "Customed"
+				} else {
+					rate = ExchangeRates["USD_KRW"]
+					time = ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
 				}
 
 				amountInKrw := rate * float64(amount)
@@ -147,87 +156,90 @@ func main() {
 	case "history":
 		if len(os.Args) <= 6 {
 			boldRed("error: Not enough arguments provided\n")
-		} else {
-			amountStr := os.Args[2]
-			currency := os.Args[3]
-			startYearStr := os.Args[4]
-			keyword := os.Args[5]
-			endYearStr := os.Args[6]
-
-			// 'to' keyword
-			if keyword != "to" {
-				boldRed("Error: Use 'to' keyword, instead of '%s' keyword\n", keyword)
-				return
-			}
-
-			var isValidCurrency bool = false
-			for _, i := range currencyList {
-				if i == currency {
-					isValidCurrency = true
-				}
-			}
-			if !isValidCurrency {
-				boldRed("error: The currency %s in <currency> is not supported\n", currency)
-				return
-			}
-
-			amount, err := strconv.Atoi(strings.ReplaceAll(amountStr, ",", ""))
-			if err != nil || amount <= 0 {
-				boldRed("error: <amount> must be positive\n")
-				return
-			}
-			startYear, err := strconv.Atoi(startYearStr)
-			if err != nil || startYear <= 0 {
-				boldRed("error: <start_year> must be positive\n")
-				return
-			}
-			endYear, err := strconv.Atoi(endYearStr)
-			if err != nil || endYear <= 0 {
-				boldRed("error: <end_year> must be positive\n")
-				return
-			}
-
-			// sY, eY는 2024 ~ 1965년만 가능함
-			isValidStartYearRange := (1965 <= startYear) && (startYear <= 2024)
-			isValidEndYearRange := (1965 <= endYear) && (endYear <= 2024)
-			if !isValidStartYearRange || !isValidEndYearRange {
-				if !isValidStartYearRange {
-					boldRed("error: <start_year> is only valid between 1965 and 2024\n")
-				}
-				if !isValidEndYearRange {
-					boldRed("error: <end_year> is only valid between 1965 and 2024\n")
-				}
-				return
-			}
-			// sY와 eY가 같다면 에러를 반환함
-			if startYear == endYear {
-				boldRed("error: <start_year> and <end_year> must be different\n")
-				return
-			}
-
-			// main logic
-			var fromCPI float64
-			var toCPI float64
-			switch currency {
-			case "KRW", "krw", "₩":
-				fromCPI = KrwCpiData[startYear]
-				toCPI = KrwCpiData[endYear]
-			case "USD", "usd", "$":
-				fromCPI = UsdCpiData[startYear]
-				toCPI = UsdCpiData[endYear]
-			}
-
-			var result float64 = float64(amount) * (toCPI / fromCPI)
-			var isToPresent bool = endYear > startYear
-
-			if isToPresent {
-				fmt.Println("Present Value")
-			} else {
-				fmt.Println("Past Value")
-			}
-			boldCyan("%s\n", lib.Comma(result))
-
+			return
 		}
+
+		var hasError bool
+		var amountStr string = os.Args[2]
+		var currency string = os.Args[3]
+		var startYearStr string = os.Args[4]
+		var keyword string = os.Args[5]
+		var endYearStr string = os.Args[6]
+
+		// 'to' keyword
+		if keyword != "to" {
+			boldRed("Error: Use 'to' keyword, instead of '%s' keyword\n", keyword)
+			hasError = true
+		}
+		var isValidCurrency bool = false
+		for _, i := range currencyList {
+			if i == currency {
+				isValidCurrency = true
+			}
+		}
+		if !isValidCurrency {
+			boldRed("error: The currency %s in <currency> is not supported\n", currency)
+			hasError = true
+		}
+		amount, err := strconv.Atoi(strings.ReplaceAll(amountStr, ",", ""))
+		if err != nil || amount <= 0 {
+			boldRed("error: <amount> must be positive\n")
+			hasError = true
+		}
+		startYear, err := strconv.Atoi(startYearStr)
+		if err != nil || startYear <= 0 {
+			boldRed("error: <start_year> must be positive\n")
+			hasError = true
+		}
+		endYear, err := strconv.Atoi(endYearStr)
+		if err != nil || endYear <= 0 {
+			boldRed("error: <end_year> must be positive\n")
+			hasError = true
+		}
+		// sY, eY는 2024 ~ 1965년만 가능함
+		isValidStartYearRange := (1965 <= startYear) && (startYear <= 2024)
+		isValidEndYearRange := (1965 <= endYear) && (endYear <= 2024)
+		if !isValidStartYearRange || !isValidEndYearRange {
+			if !isValidStartYearRange {
+				boldRed("error: <start_year> is only valid between 1965 and 2024\n")
+			}
+			if !isValidEndYearRange {
+				boldRed("error: <end_year> is only valid between 1965 and 2024\n")
+			}
+			hasError = true
+		}
+		// sY와 eY가 같다면 에러를 반환함
+		if startYear == endYear {
+			boldRed("error: <start_year> and <end_year> must be different\n")
+			hasError = true
+		}
+		if hasError {
+			return
+		}
+
+		// main logic
+		var fromCPI float64
+		var toCPI float64
+		switch currency {
+		case "KRW", "krw", "₩":
+			fromCPI = KrwCpiData[startYear]
+			toCPI = KrwCpiData[endYear]
+		case "USD", "usd", "$":
+			fromCPI = UsdCpiData[startYear]
+			toCPI = UsdCpiData[endYear]
+		}
+
+		var result float64 = float64(amount) * (toCPI / fromCPI)
+		var isToPresent bool = endYear > startYear
+
+		switch isToPresent {
+		case true:
+			fmt.Println("Present Value")
+		case false:
+			fmt.Println("Past Value")
+		}
+		boldCyan("%s\n", lib.Comma(result))
+
 	case "help", "-h", "--help":
 		help()
 	case "version", "-V", "--version":
