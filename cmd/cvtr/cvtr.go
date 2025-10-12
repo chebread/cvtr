@@ -30,17 +30,16 @@ func main() {
 	mode := os.Args[1]
 	switch mode {
 	case "convert":
-		amountStr := os.Args[2]
-		sourceCurrency := os.Args[3]
-		keyword := os.Args[4]
-		targetCurrency := os.Args[5]
-
 		// 6개 미만일 때 오류
 		if len(os.Args) <= 5 {
 			boldRed("error: Not enough arguments provided\n")
 			break
 		}
 
+		var amountStr string = os.Args[2]
+		var sourceCurrency string = os.Args[3]
+		var keyword string = os.Args[4]
+		var targetCurrency string = os.Args[5]
 		var hasError bool
 		// to keyword 아닐때 오류
 		if keyword != "to" {
@@ -90,31 +89,13 @@ func main() {
 			// return
 			hasError = true
 		}
-		// quit 조건들 (오류 메시지 연속적으로 모두 출력하기 위해서.)
-		// if keyword != "to" {
-		// 	return
-		// }
-		// if len(os.Args) >= 7 {
-		// 	if flag := os.Args[6]; flag != "--rate" && flag != "-R" {
-		// 		return
-		// 	}
-		// }
-		// if !isValidSourceCurrency {
-		// 	return
-		// }
-		// if !isValidTargetCurrency {
-		// 	return
-		// }
-		// if err != nil || amount <= 0 {
-		// 	boldRed("error: <amount> must be positive\n")
-		// 	return
-		// }
+		// 오류 메시지 연속적으로 모두 출력하기 위해서.
 		if hasError {
 			return
 		}
 
 		// --rate flag
-		isFlag := false
+		var isFlag bool
 		var flagRateValue float64
 		// len 8 이상이면 rate flag에 value가 있는 거다
 		if len(os.Args) >= 8 {
