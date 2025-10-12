@@ -24,109 +24,145 @@ func main() {
 		return
 	}
 
+	// cvtr convert: args[1] l2 <금액: args[2] l3> <소스_통화: args[3] l4> to: args[4] l5 <타겟_통화: args[5] l6> [--rate|-R: args[6] l7 <환율_값: args[7] l8>]
+
 	// subcommand 존재시
-	switch os.Args[1] {
+	mode := os.Args[1]
+	switch mode {
 	case "convert":
+		amountStr := os.Args[2]
+		sourceCurrency := os.Args[3]
+		keyword := os.Args[4]
+		targetCurrency := os.Args[5]
+
+		// 6개 미만일 때 오류
 		if len(os.Args) <= 5 {
 			boldRed("error: Not enough arguments provided\n")
-		} else {
-			amountStr := os.Args[2]
-			sourceCurrency := os.Args[3]
-			keyword := os.Args[4]
-			targetCurrency := os.Args[5]
+			break
+		}
 
-			// 'to' keyword
-			if keyword != "to" {
-				boldRed("Error: Use 'to' keyword, instead of '%s' keyword\n", keyword)
-				return
-			}
-
-			// --rate flag
-			isFlag := false
-			var flagRateValue float64
-			if len(os.Args) >= 7 { // len은 1부터이다.
-				// rate flag에 값이 제공되지 않으면 그냥 아무 활동도 하지 않음.
-				flag := os.Args[6]
-				if flag != "--rate" && flag != "-R" { // --rate"가 아니고, 그리고 "-R"도 아닐 때
-					boldRed("error: %s is an invalid flag\n", flag)
-					return
-				}
-				if len(os.Args) == 8 {
-					isFlag = true
-					var err error
-					flagRateValue, err = strconv.ParseFloat(os.Args[7], 64) // 무조건 1달러당 원화 // 1300
-					if err != nil {
-						boldRed("error: Error converting string to float64\n")
-						return
-					}
-
-				}
-			}
-
-			// 지원 통화 체크
-			var isValidSourceCurrency bool = false
-			var isValidTargetCurrency bool = false
-			for _, i := range currencyList {
-				if i == sourceCurrency {
-					isValidSourceCurrency = true
-				}
-				if i == targetCurrency {
-					isValidTargetCurrency = true
-				}
-			}
-			if !isValidSourceCurrency {
-				boldRed("error: The currency %s in <source_currency> is not supported\n", sourceCurrency)
-				return // main 함수 종료
-			}
-			if !isValidTargetCurrency {
-				boldRed("error: The currency %s in <target_currency> is not supported\n", targetCurrency)
-				return
-			}
-
-			// amount: string -> positive int 변환
-			// 참고로, amount가 0이면 의미가 없으므로 종료해야 함.
-			amount, err := strconv.Atoi(strings.ReplaceAll(amountStr, ",", "")) // amount에 존재하는 쉼표를 모두 삭제함; Atoi는 int(32 or 64) type으로 변환함
-			if err != nil || amount <= 0 {
-				boldRed("error: <amount> must be positive\n")
-				return
-			}
-
-			// main logic
-			switch targetCurrency {
-			case "USD", "usd", "$":
-				switch sourceCurrency {
-				case "KRW", "krw", "₩":
-					rate := 1 / ExchangeRates["USD_KRW"]
-					time := ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
-					if isFlag {
-						rate = 1 / flagRateValue
-						time = "Customed"
-					}
-
-					amountInUsd := rate * float64(amount) // USD로 환산된 금액; 원화 -> 달러
-					fmt.Printf("Last Updated: %s\n", time)
-					boldCyan("%s$\n", lib.Comma(amountInUsd))
-				default:
-					boldRed("error: The currencies of <source_currency> and <target_currency> must be different\n")
-				}
-			case "KRW", "krw", "₩":
-				switch sourceCurrency {
-				case "USD", "usd", "$":
-					rate := ExchangeRates["USD_KRW"]
-					time := ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
-					if isFlag {
-						rate = flagRateValue
-						time = "Customed"
-					}
-
-					amountInKrw := rate * float64(amount)
-					fmt.Printf("Last Updated: %s\n", time)
-					boldCyan("%s₩\n", lib.Comma(amountInKrw))
-				default:
-					boldRed("error: The currencies of <source_currency> and <target_currency> must be different\n")
-				}
+		var hasError bool
+		// to keyword 아닐때 오류
+		if keyword != "to" {
+			boldRed("error: Use 'to' keyword, instead of '%s' keyword\n", keyword)
+			// return
+			hasError = true
+		}
+		// flag는 len 7에 저장되어 있다.
+		// len 7일 때 정의되지 않은 다른 flag 사용시 에러를 발생 시킨다.
+		// == 7 가 아니라 >= 7 인 이유는, len 8 이상으로 갈 수도 있기 때문임. 그래서 7이상으로 범위를 정한 것임.
+		if len(os.Args) >= 7 {
+			// "--rate" 그리고 "-R"도 아닐 때 == "rate, R" 외의 다른 flag 일 때
+			if flag := os.Args[6]; flag != "--rate" && flag != "-R" {
+				boldRed("error: %s is an invalid flag\n", flag)
+				// return
+				hasError = true
 			}
 		}
+		//TODO: 지금은 이렇게 안하지만 rate flag가 선언되고, 꼭 value가 동봉되어야 한다. l8까지 꼭 와야 한다는 것이다. l7에서 일단 rate flag name이 맞는지 체크하고, -> 응 l7까지만 해야 한다. 왜? rate Flag만 하는게 아니잖아. 미래적으로 봤을 때는.
+		// 지원 통화 체크
+		// TODO: 이 코드도 좋지만, tidy에서 알려주는 것처럼, 이런 형태는 헬퍼 함수를 만들어서 활용하라.
+		var isValidSourceCurrency bool = false
+		var isValidTargetCurrency bool = false
+		for _, i := range currencyList {
+			if i == sourceCurrency {
+				isValidSourceCurrency = true
+			}
+			if i == targetCurrency {
+				isValidTargetCurrency = true
+			}
+		}
+		if !isValidSourceCurrency {
+			boldRed("error: The currency %s in <source_currency> is not supported\n", sourceCurrency)
+			// return // main 함수 종료
+			hasError = true
+		}
+		if !isValidTargetCurrency {
+			boldRed("error: The currency %s in <target_currency> is not supported\n", targetCurrency)
+			// return
+			hasError = true
+		}
+		// amount: string -> positive int 변환
+		// 참고로, amount가 0이면 의미가 없으므로 종료해야 함.
+		amount, err := strconv.Atoi(strings.ReplaceAll(amountStr, ",", "")) // amount에 존재하는 쉼표를 모두 삭제함; Atoi는 int(32 or 64) type으로 변환함
+		if err != nil || amount <= 0 {
+			boldRed("error: <amount> must be positive\n")
+			// return
+			hasError = true
+		}
+		// quit 조건들 (오류 메시지 연속적으로 모두 출력하기 위해서.)
+		// if keyword != "to" {
+		// 	return
+		// }
+		// if len(os.Args) >= 7 {
+		// 	if flag := os.Args[6]; flag != "--rate" && flag != "-R" {
+		// 		return
+		// 	}
+		// }
+		// if !isValidSourceCurrency {
+		// 	return
+		// }
+		// if !isValidTargetCurrency {
+		// 	return
+		// }
+		// if err != nil || amount <= 0 {
+		// 	boldRed("error: <amount> must be positive\n")
+		// 	return
+		// }
+		if hasError {
+			return
+		}
+
+		// --rate flag
+		isFlag := false
+		var flagRateValue float64
+		// len 8 이상이면 rate flag에 value가 있는 거다
+		if len(os.Args) >= 8 {
+			isFlag = true // rate flag가 있다고 확신가능하다. 왜? 위에서 이미 방어코드를 사용해 전제 조건으로 rate, R을 검사했기 때문이다.
+			var err error
+			flagRateValue, err = strconv.ParseFloat(os.Args[7], 64) // 무조건 1달러당 원화 // 1300
+			if err != nil {
+				boldRed("error: rate flag argument must be an integer\n")
+				return
+			}
+		}
+
+		// main logic
+		switch targetCurrency {
+		case "USD", "usd", "$":
+			switch sourceCurrency {
+			case "KRW", "krw", "₩":
+				rate := 1 / ExchangeRates["USD_KRW"]
+				time := ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
+				if isFlag {
+					rate = 1 / flagRateValue
+					time = "Customed"
+				}
+
+				amountInUsd := rate * float64(amount) // USD로 환산된 금액; 원화 -> 달러
+				fmt.Printf("Last Updated: %s\n", time)
+				boldCyan("%s$\n", lib.Comma(amountInUsd))
+			default:
+				boldRed("error: The currencies of <source_currency> and <target_currency> must be different\n")
+			}
+		case "KRW", "krw", "₩":
+			switch sourceCurrency {
+			case "USD", "usd", "$":
+				rate := ExchangeRates["USD_KRW"]
+				time := ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
+				if isFlag {
+					rate = flagRateValue
+					time = "Customed"
+				}
+
+				amountInKrw := rate * float64(amount)
+				fmt.Printf("Last Updated: %s\n", time)
+				boldCyan("%s₩\n", lib.Comma(amountInKrw))
+			default:
+				boldRed("error: The currencies of <source_currency> and <target_currency> must be different\n")
+			}
+		}
+
 	case "history":
 		if len(os.Args) <= 6 {
 			boldRed("error: Not enough arguments provided\n")
