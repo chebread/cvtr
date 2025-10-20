@@ -1,7 +1,8 @@
 package main
 
 import (
-	"cvtr/lib"
+	"github.com/chebread/cvtr/internal/db"
+	"github.com/chebread/cvtr/internal/lib"
 
 	"fmt"
 	"os"
@@ -10,6 +11,9 @@ import (
 
 	"github.com/fatih/color"
 )
+
+var ProgramName = os.Args[0]
+var ProgramVersion = "development" // It will be replaced with a git tag.
 
 var boldCyan = color.New(color.FgCyan, color.Bold).PrintfFunc() // cyan colored printf
 var boldRed = color.New(color.FgRed, color.Bold).PrintfFunc()
@@ -64,7 +68,7 @@ func main() {
 		// TODO: 이 코드도 좋지만, tidy에서 알려주는 것처럼, 이런 형태는 헬퍼 함수를 만들어서 활용하라.
 		var isValidSourceCurrency bool = false
 		var isValidTargetCurrency bool = false
-		for _, i := range currencyList {
+		for _, i := range db.CurrencyList {
 			if i == sourceCurrency {
 				isValidSourceCurrency = true
 			}
@@ -90,11 +94,6 @@ func main() {
 			// return
 			hasError = true
 		}
-		// 오류 메시지 연속적으로 모두 출력하기 위해서.
-		if hasError {
-			return
-		}
-
 		// --rate flag
 		var isFlag bool
 		var flagRateValue float64
@@ -105,8 +104,12 @@ func main() {
 			flagRateValue, err = strconv.ParseFloat(os.Args[7], 64) // 무조건 1달러당 원화 // 1300
 			if err != nil {
 				boldRed("error: rate flag argument must be an integer\n")
-				return
+				hasError = true
 			}
+		}
+		// 오류 메시지 연속적으로 모두 출력하기 위해서.
+		if hasError {
+			break
 		}
 
 		// main logic
@@ -121,8 +124,8 @@ func main() {
 					rate = 1 / flagRateValue
 					time = "Customed"
 				} else {
-					rate = 1 / ExchangeRates["USD_KRW"] // TODO: 이게 부동소수점 error는 안나는가?
-					time = ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
+					rate = 1 / db.ExchangeRates["USD_KRW"] // TODO: 이게 부동소수점 error는 안나는가?
+					time = db.ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
 				}
 
 				amountInUsd := rate * float64(amount) // USD로 환산된 금액; 원화 -> 달러
@@ -141,8 +144,8 @@ func main() {
 					rate = flagRateValue
 					time = "Customed"
 				} else {
-					rate = ExchangeRates["USD_KRW"]
-					time = ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
+					rate = db.ExchangeRates["USD_KRW"]
+					time = db.ExchangeRatesLastUpdated["USD_KRW"].Format("2006-01-02")
 				}
 
 				amountInKrw := rate * float64(amount)
@@ -156,7 +159,7 @@ func main() {
 	case "history":
 		if len(os.Args) <= 6 {
 			boldRed("error: Not enough arguments provided\n")
-			return
+			break
 		}
 
 		var hasError bool
@@ -172,7 +175,7 @@ func main() {
 			hasError = true
 		}
 		var isValidCurrency bool = false
-		for _, i := range currencyList {
+		for _, i := range db.CurrencyList {
 			if i == currency {
 				isValidCurrency = true
 			}
@@ -214,7 +217,7 @@ func main() {
 			hasError = true
 		}
 		if hasError {
-			return
+			break
 		}
 
 		// main logic
@@ -222,11 +225,11 @@ func main() {
 		var toCPI float64
 		switch currency {
 		case "KRW", "krw", "₩":
-			fromCPI = KrwCpiData[startYear]
-			toCPI = KrwCpiData[endYear]
+			fromCPI = db.KrwCpiData[startYear]
+			toCPI = db.KrwCpiData[endYear]
 		case "USD", "usd", "$":
-			fromCPI = UsdCpiData[startYear]
-			toCPI = UsdCpiData[endYear]
+			fromCPI = db.UsdCpiData[startYear]
+			toCPI = db.UsdCpiData[endYear]
 		}
 
 		var result float64 = float64(amount) * (toCPI / fromCPI)
@@ -243,7 +246,7 @@ func main() {
 	case "help", "-h", "--help":
 		help()
 	case "version", "-V", "--version":
-		fmt.Printf("cvtr %s\n", ProgramVersion)
+		fmt.Printf("%s %s\n", ProgramName, ProgramVersion)
 	default:
 		boldRed("error: %s is an invalid command\n", os.Args[1])
 	}

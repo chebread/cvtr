@@ -1,11 +1,9 @@
-package main
+package db
 
 import "time"
 
-var ProgramVersion = "development" // It will be replaced with a git tag.
-
 // 지원 통화
-var currencyList = [...]string{
+var CurrencyList = [...]string{
 	"KRW",
 	"krw",
 	"₩",

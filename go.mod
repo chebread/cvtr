@@ -1,4 +1,4 @@
-module cvtr
+module github.com/chebread/cvtr
 
 go 1.24.4
 
