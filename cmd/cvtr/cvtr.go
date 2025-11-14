@@ -12,6 +12,8 @@ import (
 	"github.com/fatih/color"
 )
 
+// map 공부용
+
 var ProgramName = os.Args[0]
 var ProgramVersion = "development" // It will be replaced with a git tag.
 

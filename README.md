@@ -1,7 +1,10 @@
 # cvtr
-[[한국어](README.kr.md)]
-
 `cvtr` is a currency converter and historical value translator.
+
+## Learning Go
+This project is designed to help me learn this area of TGPL.
+- Map
+- os.Args
 
 ## Table of Contents
 - [Features](#features)
