@@ -1,11 +1,6 @@
 # cvtr
 `cvtr` is a currency converter and historical value translator.
 
-## Learning Go
-This project is designed to help me learn this area of TGPL.
-- Map
-- os.Args
-
 ## Table of Contents
 - [Features](#features)
 - [How to use](#how-to-use)
