@@ -87,4 +87,4 @@ For other OS, you will need to download the new version from [the GitHub Release
 Download the latest release for your system and replace your old executable file with the new one.
 
 ## License
-MIT LICENSE &copy; 2025 Cha Haneum
+MIT LICENSE &copy; 2025-2026 Cha Haneum
