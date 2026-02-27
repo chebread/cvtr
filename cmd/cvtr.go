@@ -201,15 +201,15 @@ func main() {
 			boldRed("error: <end_year> must be positive\n")
 			hasError = true
 		}
-		// sY, eY는 2024 ~ 1965년만 가능함
-		isValidStartYearRange := (1965 <= startYear) && (startYear <= 2024)
-		isValidEndYearRange := (1965 <= endYear) && (endYear <= 2024)
+		// sY, eY는 2025 ~ 1965년만 가능함
+		isValidStartYearRange := (1965 <= startYear) && (startYear <= 2025)
+		isValidEndYearRange := (1965 <= endYear) && (endYear <= 2025)
 		if !isValidStartYearRange || !isValidEndYearRange {
 			if !isValidStartYearRange {
-				boldRed("error: <start_year> is only valid between 1965 and 2024\n")
+				boldRed("error: <start_year> is only valid between 1965 and 2025\n")
 			}
 			if !isValidEndYearRange {
-				boldRed("error: <end_year> is only valid between 1965 and 2024\n")
+				boldRed("error: <end_year> is only valid between 1965 and 2025\n")
 			}
 			hasError = true
 		}
