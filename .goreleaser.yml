@@ -1,8 +1,12 @@
+version: 2
+project_name: cvtr
+
 builds:
-  - env:
+  - id: cvtr
+    main: ./cmd/cvtr.go
+    binary: cvtr
+    env:
       - CGO_ENABLED=0
-    ldflags:
-      - -X 'main.ProgramVersion={{.Version}}'
     goos:
       - linux
       - windows
@@ -10,28 +14,33 @@ builds:
     goarch:
       - amd64
       - arm64
+    ldflags:
+      - -s -w -X 'main.ProgramVersion={{.Version}}'
+
 archives:
-  - format: tar.gz
+  - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    format: tar.gz
     format_overrides:
       - goos: windows
         format: zip
+
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "checksums.txt"
+
 snapshot:
   name_template: "{{ incpatch .Version }}-next"
+
 changelog:
   disable: true
+
 brews:
-  -
-    repository:
+  - repository:
       owner: chebread
       name: homebrew-cvtr
       branch: master
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-
     homepage: "https://github.com/chebread/cvtr"
     description: "A dead simple currency tool for your terminal."
     license: "MIT"
-
     install: |
       bin.install "cvtr"
