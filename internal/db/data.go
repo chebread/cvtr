@@ -14,10 +14,10 @@ var CurrencyList = [...]string{
 
 // 합리적인 시점의 환율 데이터를 코드에 변수로 내장함.
 var ExchangeRatesLastUpdated = map[string]time.Time{
-	"USD_KRW": time.Date(2025, 7, 30, 0, 0, 0, 0, time.UTC), // KRW_TO_USD = 1 / USD_TO_KRW
+	"USD_KRW": time.Date(2026, 4, 11, 0, 0, 0, 0, time.UTC), // KRW_TO_USD = 1 / USD_TO_KRW
 }
 var ExchangeRates = map[string]float64{
-	"USD_KRW": 1384.03, // 1달러당 원화
+	"USD_KRW": 1485.5, // 1달러당 원화
 }
 
 // KRW CPI; https://www.index.go.kr/unify/idx-info.do?idxCd=4226
