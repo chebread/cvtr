@@ -1,4 +1,9 @@
 # cvtr
+
+[![GitHub Release](https://img.shields.io/github/v/release/chebread/cvtr?style=flat-square)](https://github.com/chebread/cvtr/releases)
+[![GoReleaser](https://github.com/chebread/cvtr/actions/workflows/release.yml/badge.svg)](https://github.com/chebread/cvtr/actions/workflows/release.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/chebread/cvtr)](https://goreportcard.com/report/github.com/chebread/cvtr)
+
 `cvtr` is a currency converter and historical value translator.
 
 ## Table of Contents
