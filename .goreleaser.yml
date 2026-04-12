@@ -23,7 +23,7 @@ archives:
 checksum:
   name_template: "checksums.txt"
 
-homebrews:
+brews:
   - repository:
       owner: chebread
       name: homebrew-cvtr
