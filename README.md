@@ -59,6 +59,23 @@ Past Value
 ### Flexible Amount Input
 You can input the <amount> with or without commas in both cvtr convert and cvtr history commands. For example, `1,000`, `10,00`, `100,0`, or even `1,0,0,0` are all valid. The system will automatically remove all commas before processing, using only the numerical value.
 
+### Accumulated Error Display
+Instead of exiting immediately on the first error, `cvtr` aggregates all validation issues and displays them at once. This allows users to intuitively identify and fix all input errors in a single run.
+
+```bash
+$ cvtr history 10x,00 usda to krwb --rate 30x00
+error: Use 'to' keyword, instead of 'krwb' keyword
+error: The currency usda in <currency> is not supported
+error: <amount> must be positive
+error: <start_year> must be positive
+error: <end_year> must be positive
+error: <start_year> is only valid between 1965 and 2025
+error: <end_year> is only valid between 1965 and 2025
+error: <start_year> and <end_year> must be different
+
+For more information, try '--help'.
+```
+
 ## Example
 ### Live Rates
 Get real-time exchange rates using `curl` and [exchangerate-api](https://www.exchangerate-api.com/) with the `--rate` flag.
