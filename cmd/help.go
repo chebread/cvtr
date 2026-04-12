@@ -11,7 +11,7 @@ var b = color.New(color.Bold).SprintFunc()
 
 func help() {
 	// \n\n을 사용하면 fmt.Println() 호출을 줄여 코드를 더 간결하게 만들 수 있습니다.
-	fmt.Printf("currency converter and historical value translator\n\n")
+	fmt.Printf("Currency converter and historical value translator\n\n")
 
 	fmt.Printf("%s\n", h("Usage:"))
 	fmt.Printf("  cvtr convert <amount> <source_currency> to <target_currency> [-R <rate>]\n")
