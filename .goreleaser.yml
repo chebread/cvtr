@@ -30,7 +30,7 @@ brews:
       branch: master
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     homepage: "https://github.com/chebread/cvtr"
-    description: "A dead simple currency tool for your terminal."
+    description: "Currency converter and historical value translator"
     license: "MIT"
     install: |
       bin.install "cvtr"

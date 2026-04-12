@@ -107,6 +107,8 @@ func main() {
 		}
 		// 오류 메시지 연속적으로 모두 출력하기 위해서.
 		if hasError {
+			fmt.Println()
+			fmt.Println("For more information, try '--help'.")
 			break
 		}
 
@@ -169,7 +171,7 @@ func main() {
 
 		// 'to' keyword
 		if keyword != "to" {
-			boldRed("Error: Use 'to' keyword, instead of '%s' keyword\n", keyword)
+			boldRed("error: Use 'to' keyword, instead of '%s' keyword\n", keyword)
 			hasError = true
 		}
 		var isValidCurrency bool = false
@@ -215,6 +217,8 @@ func main() {
 			hasError = true
 		}
 		if hasError {
+			fmt.Println()
+			fmt.Println("For more information, try '--help'.")
 			break
 		}
 
