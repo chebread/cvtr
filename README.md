@@ -78,10 +78,10 @@ For more information, try '--help'.
 
 ## Example
 ### Live Rates
-Get real-time exchange rates using `curl` and [exchangerate-api](https://www.exchangerate-api.com/) with the `--rate` flag.
+Get real-time exchange rates using `curl`, `jq` and [exchangerate-api](https://www.exchangerate-api.com/) with the `--rate` flag.
 
 ```shell
-cvtr convert 1 USD to KRW --rate $(curl -s "https://v6.exchangerate-api.com/v6/YOUR_API_KEY/pair/USD/KRW")
+cvtr convert 1 USD to KRW --rate $(curl -s "https://v6.exchangerate-api.com/v6/YOUR_API_KEY/pair/USD/KRW" | jq -r '.conversion_rate')
 ```
 
 ## Currently supported currencies
