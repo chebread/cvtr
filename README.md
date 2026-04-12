@@ -9,17 +9,18 @@
 ## Table of Contents
 - [Features](#features)
 - [How to use](#how-to-use)
+- [Example](#example)
 - [Currently supported currencies](#currently-supported-currencies)
 - [Installation](#installation)
 - [Updating](#updating)
 - [License](#license)
 
 ## Features
-- Real-time currency conversion
+- Currency conversion
 - Historical value calculation
 
 ## How to use
-### Real-time currency conversion
+### Currency conversion
 ```shell
 cvtr convert <amount> <source_currency> to <target_currency> [--rate|-R <rate_value>]
 ```
@@ -58,9 +59,17 @@ Past Value
 ### Flexible Amount Input
 You can input the <amount> with or without commas in both cvtr convert and cvtr history commands. For example, `1,000`, `10,00`, `100,0`, or even `1,0,0,0` are all valid. The system will automatically remove all commas before processing, using only the numerical value.
 
+## Example
+### Live Rates
+Get real-time exchange rates using `curl` and [exchangerate-api](https://www.exchangerate-api.com/) with the `--rate` flag.
+
+```shell
+cvtr convert 1 USD to KRW --rate $(curl -s "https://v6.exchangerate-api.com/v6/YOUR_API_KEY/pair/USD/KRW")
+```
+
 ## Currently supported currencies
-- Korean Won (KRW, It can be abbreviated as `₩`)
-- US Dollar (USD, It can be abbreviated as `$`)
+- Korean Won: KRW, krw, ₩
+- US Dollar: USD, usd, $
 
 ## Installation
 ### On macOS
@@ -71,13 +80,6 @@ brew tap chebread/cvtr
 brew install cvtr
 ```
 
-### For other OS
-1. Visit [the GitHub Releases page](https://github.com/chebread/cvtr/releases) for `cvtr`.
-2. Download the appropriate file for your operating system and architecture.
-3. Unachive the downloaded file.
-4. Execute the `cvtr` executable file.
-5. For easier access, consider adding `cvtr` executable file to your system's PATH environment variable.
-
 ## Updating
 ### On macOS
 If you installed `cvtr` using Homebrew, you can easily upgrade to the latest version when it's released.
@@ -85,11 +87,6 @@ If you installed `cvtr` using Homebrew, you can easily upgrade to the latest ver
 ```shell
 brew upgrade cvtr
 ```
-
-### For Other OS
-For other OS, you will need to download the new version from [the GitHub Releases page](https://github.com/chebread/cvtr/releases) for `cvtr`.
-
-Download the latest release for your system and replace your old executable file with the new one.
 
 ## License
 MIT LICENSE &copy; 2025-2026 Cha Haneum
