@@ -3,7 +3,7 @@ project_name: cvtr
 
 builds:
   - id: cvtr
-    main: ./cmd/cvtr.go
+    main: ./cmd
     binary: cvtr
     env:
       - CGO_ENABLED=0
@@ -17,12 +17,13 @@ builds:
 
 archives:
   - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
-    format: tar.gz
+    formats:
+      - tar.gz
 
 checksum:
   name_template: "checksums.txt"
 
-brews:
+homebrews:
   - repository:
       owner: chebread
       name: homebrew-cvtr
