@@ -20,10 +20,6 @@ var ProgramVersion = "development" // It will be replaced with a git tag.
 var boldCyan = color.New(color.FgCyan, color.Bold).PrintfFunc() // cyan colored printf
 var boldRed = color.New(color.FgRed, color.Bold).PrintfFunc()
 
-func help() {
-	fmt.Println("A currency converter and historical value translator.")
-}
-
 func main() {
 	if len(os.Args) < 2 {
 		help()
